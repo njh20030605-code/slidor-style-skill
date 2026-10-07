@@ -16,8 +16,10 @@ desc=("description: Premium presentation and HTML page design in the style of Pa
 s=re.sub(r'^description: .*$',desc,s,count=1,flags=re.M)
 open(p,'w',encoding='utf8').write(s)
 PY
-# 禁用词检查：公司 / 品牌内部 / 个人路径 / 飞书 ID
-if grep -rnIiE "KANS|韩束|王嘉尔|Jackson Wang|杨佳林|Jasper|上美|chicmax|VN-TK|晋升|/Users/|Desktop/|oc_[0-9a-f]{8}|om_x[0-9a-f]{6}|ou_[0-9a-f]{8}" "$S"; then
+# 禁用词检查：正则放在本机 scrub-words.local（不提交），一行，ERE 语法
+W="$R/scrub-words.local"
+if [ -f "$W" ] && grep -rnIiE "$(head -1 "$W")" "$S"; then
   echo "❌ scrub: 发现不应公开的内容（见上）"; exit 1
 fi
+[ -f "$W" ] || echo "⚠️  没有 scrub-words.local，跳过禁用词检查"
 echo "✅ scrub ok"
